@@ -8,8 +8,9 @@ import sys
 import json
 
 
-def fill_db():
-
+async def fill_db():
+    db = DatabaseContext('db.db')
+    await db.ensureCreated()
     vk_client = VkClient(sys.argv[2])
     post_count = vk_client.get_post_count()
     posts = []
@@ -19,7 +20,7 @@ def fill_db():
         posts = sort_collection(vk_client.get_data(offset))
         for post in posts:
             parsed_post = parse_post(post)
-            print(parsed_post)
+            await db.addPost(parsed_post)
         offset += 100
 
         post_count -= 100
@@ -30,15 +31,16 @@ hashtag_regex = re.compile('#[\S]*')
 
 def parse_post(unparsed):
     post = Post()
-    post.text = unparsed['text']
+    post.text = unparsed['text'].replace('"',"'")
     post.topic = ' '.join(re.findall(hashtag_regex, unparsed['text']))
     post.hash = unparsed['hash']
     post.pictures = []
     for unparsed_picture in where(unparsed['attachments'], lambda x: x['type'] == 'photo'):
         picture = Picture()
-        picture.link = sorted(unparsed_picture['photo']['sizes'], key=lambda x: x['height'], reverse=True)
+        picture.link = sorted(unparsed_picture['photo']['sizes'], key=lambda x: x['height'], reverse=True)[0]['url']
         post.pictures.append(picture)
     return post
+
 
 def where(coll, func):
     new_c = []
@@ -50,35 +52,12 @@ def where(coll, func):
 
 async def main_async():
     if sys.argv[1] == 'fill-database':
-        fill_db()
+        await fill_db()
 
     elif sys.argv[1] == 'startbot':
         pass
     else:
         print('Wrong command')
-
-    # print(json.dumps(r, indent=4))
-    # s = {'items':r}
-    # print(json.dumps(r))
-    # print(json.dumps(s,indent=2))
-
-    # db = DatabaseContext("db.db")
-    # await db.ensureCreated()
-    #
-    # post = Post()
-    # post.text = "Cool post"
-    # post.topic = "About coolnesses"
-    # pic = Picture()
-    # pic.link = 'google.com'
-    # post.hash = "hash"
-    # post.pictures = [pic, pic]
-    #
-    # await db.addPost(post)
-    # post = await db.getPost(4)
-    # for pic in post.pictures:
-    #     print(pic.id)
-    # print(post.pictures)
-    # await db.getLastPostId()
 
     pass
 
