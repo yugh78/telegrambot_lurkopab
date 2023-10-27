@@ -34,14 +34,9 @@ class DatabaseContext:
         async with aiosqlite.connect(self.databaseName) as db:
             file = open(f"./database/create_{'post'}_command.sql", "r")
             command = ''.join(file.readlines())
-
-            print("command: "+ command)
-
             command = command.replace("@text", f'"{post.text}"')
             command = command.replace("@topic", f'"{post.topic}"')
             command = command.replace("@hash", f'"{post.hash}"')
-
-            print("command: "+ command)
             file.close()
 
             await db.execute(command)
