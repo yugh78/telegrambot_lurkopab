@@ -47,7 +47,8 @@ def is_right_item(item):
         and '#паста' in item['text']
 
 
-enable_log = True
+enable_log = False
+
 
 
 def log(msg, *args):

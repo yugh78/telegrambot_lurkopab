@@ -5,4 +5,6 @@ class Post:
     topic: str
     hash: str
     pictures: list[Picture]
+    def __str__(self):
+        return (f'{self.text}, {self.topic}, {self.hash}')
 
