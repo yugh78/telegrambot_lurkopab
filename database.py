@@ -22,9 +22,8 @@ class DatabaseContext:
         """
         async with aiosqlite.connect(self.databaseName) as db:
             for table in TABLES:
-                file = open(f"./database/{table}.sql", "r")
-                command = ''.join(file.readlines())
-                file.close()
+                with open(f"./database/{table}.sql", "r") as file:
+                    command = ''.join(file.readlines())
 
                 await db.execute(command)
                 await db.commit()
@@ -32,12 +31,11 @@ class DatabaseContext:
 
     async def addPost(self, post: Post):
         async with aiosqlite.connect(self.databaseName) as db:
-            file = open(f"./database/create_{'post'}_command.sql", "r")
-            command = ''.join(file.readlines())
+            with open(f"./database/create_{'post'}_command.sql", "r") as file:
+                command = ''.join(file.readlines())
             command = command.replace("@text", f'"{post.text}"')
             command = command.replace("@topic", f'"{post.topic}"')
             command = command.replace("@hash", f'"{post.hash}"')
-            file.close()
 
             await db.execute(command)
             await db.commit()
@@ -49,9 +47,8 @@ class DatabaseContext:
 
     async def getLastPostId(self) -> int:
         async with aiosqlite.connect(self.databaseName) as db:
-            file = open(f"./database/get_last_post.sql", "r")
-            command = ''.join(file.readlines())
-            file.close()
+            with open(f"./database/get_last_post.sql", "r") as file:
+                command = ''.join(file.readlines())
 
             async with db.execute(command) as cursor:
                 async for row in cursor:
@@ -59,24 +56,21 @@ class DatabaseContext:
 
     async def addPicture(self, picture: Picture, postId: int):
         async with aiosqlite.connect(self.databaseName) as db:
-            file = open(f"./database/create_{'picture'}_command.sql", "r")
-            
-            command = ''.join(file.readlines())
+            with open(f"./database/create_{'picture'}_command.sql", "r") as file:
+                command = ''.join(file.readlines())
 
             command = command.replace("@link", f'"{picture.link}"')
             command = command.replace("@post_id", f'"{postId}"')
-
-            file.close()
 
             await db.execute(command)
             await db.commit()
 
     async def getPost(self, postId: int) -> Post:
         async with aiosqlite.connect(self.databaseName) as db:
-            file = open(f"./database/get_post.sql", "r")
-            command = ''.join(file.readlines())
+            with open(f"./database/get_post.sql", "r") as file:
+                command = ''.join(file.readlines())
             command = command.replace("@id", str(postId))
-            file.close()
+            
 
             post = Post()
 
@@ -93,10 +87,9 @@ class DatabaseContext:
                 
     async def getPictures(self, postId: int) -> list[Picture]:
         async with aiosqlite.connect(self.databaseName) as db:
-            file = open(f"./database/get_pictures.sql", "r")
-            command = ''.join(file.readlines())
+            with open(f"./database/get_pictures.sql", "r") as file:
+                command = ''.join(file.readlines())
             command = command.replace("@postId", str(postId))
-            file.close()
 
             pictures = []
 
