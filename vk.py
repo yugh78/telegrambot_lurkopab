@@ -5,14 +5,15 @@ import vk_api
 WALL_DOMAIN = 'lurkopub_alive'
 
 class VkClient:
-    def __init__(self, app_id):
+    def __init__(self, app_id, logger = None):
         self.app_id = app_id
+        self.logger = logger
 
     def get_data(self, offset: int):
         session = vk_api.VkApi(token=self.app_id)
         vk = session.get_api()
         posts = vk.wall.get(offset=offset, v=5.154, domain=WALL_DOMAIN, count=100, filter='all')
-        # log('get response ...', posts['items'])
+        if self.logger is not None: self.logger.log_debug("get response from VK", posts)
         return posts['items']
 
     def get_post_count(self):
@@ -30,19 +31,6 @@ def sort_collection(coll):
 
     return result
 
-
 def is_right_item(item):
     return item['inner_type'] == 'wall_wallpost' \
         and '#паста' in item['text']
-
-
-enable_log = False
-
-
-
-def log(msg, *args):
-    global enable_log
-    if enable_log:
-        if msg:
-            print(f"\033[32m{msg}\033[0;0m")
-        print(json.dumps(args, indent=2))

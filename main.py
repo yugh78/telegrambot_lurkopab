@@ -6,6 +6,7 @@ from vk import VkClient, sort_collection
 import re
 import sys
 import json
+from logger import Logger, LogLevel
 
 
 async def fill_db():
@@ -26,7 +27,7 @@ async def fill_db():
         post_count -= 100
 
 
-hashtag_regex = re.compile('#[\S]*')
+hashtag_regex = re.compile('#[\\S]*')
 
 
 def parse_post(unparsed):
@@ -51,6 +52,12 @@ def where(coll, func):
 
 
 async def main_async():
+    logger = Logger(LogLevel.DEBUG)
+
+    logger.log_debug("fuck", "fuck")
+    logger.log_error("fuck", "fuck")
+    logger.log_info("fuck", "fuck")
+
     if sys.argv[1] == 'fill-database':
         await fill_db()
 
