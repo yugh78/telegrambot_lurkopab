@@ -1,10 +1,10 @@
 from models.picture import Picture
+
+@dataclass
 class Post:
-    id: int
+    id: int = 0
     text: str
     topic: str
     hash: str
-    pictures: list[Picture]
-    def __str__(self):
-        return (f'{self.text}, {self.topic}, {self.hash}')
+    pictures: list[Picture] = []
 

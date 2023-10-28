@@ -1,5 +1,6 @@
+@dataclass
 class Picture:
-    id: int
+    id: int = 0
     link: str
     postId: int
         
