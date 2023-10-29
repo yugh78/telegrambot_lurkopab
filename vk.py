@@ -37,14 +37,15 @@ def sort_collection(coll):
     for x in coll:
         if is_right_item(x):
             result.append(x)
-            log('item is right:', x)
+
 
     return result
 
 
 def is_right_item(item):
+
     return item['inner_type'] == 'wall_wallpost' \
-        and '#паста' in item['text']
+        and '#паста' in item['text'] and len(item['text']) > 250
 
 
 enable_log = False
