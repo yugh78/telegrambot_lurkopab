@@ -1,5 +1,6 @@
 import asyncio
 from database import DatabaseContext
+from models import Post, Picture
 from vk import VkClient, sort_collection
 import re
 import sys
