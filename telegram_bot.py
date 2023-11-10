@@ -33,22 +33,26 @@ async def start_handler(msg: types.Message):
 
 @dp.message(Command('getpost'))
 async def get_post(msg: types.Message):
-    text = msg.text.replace('/getpost', '')
-    if len(text) > 0:
+    topic = msg.text.replace('/getpost', '')
+    if len(topic) > 0:
         db.connect()
-        count = Post.select(fn.COUNT(Post.hash)).where(Post.topic.contains(text)).scalar()
-        # print(len(count_query))
+        UserAction.create(user=User.get(User.user_id == msg.from_user.id), chosen_topic=topic)
+        count = Post.select(fn.COUNT(Post.hash)).where(Post.topic.contains(topic)).scalar()
         post_id = random.randint(0, count)
         post_query = Post.select().where(Post.id == post_id)
         post = Post()
-        for row in post_query:
-            post = row
-        db.close()
-        for i in range(0, len(str(post.text)),4096):
-            s = str(post.text)[i: i + 4096]
-            await msg.answer(text=s )
-    else:
-        await msg.answer(text='съебался')
+
+        if count == 0:
+            await msg.answer(text='Отсутствует текст на эту тему')
+            db.close()
+        else:
+            for row in post_query:
+                post = row
+            db.close()
+            post_text = str(post.text)
+            post_text_ar = [post_text[i:i + 4096] for i in range(0, len(post_text), 4096)]
+            for x in post_text_ar:
+                await msg.answer(text=x)
 
 
 async def main() -> None:
